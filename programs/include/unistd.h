@@ -1,0 +1,1 @@
+int syscall(int eax_in, int ebx_in, int ecx_in, int edx_in, int edi_in, int esi_in);
