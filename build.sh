@@ -114,3 +114,23 @@ else
     qemu-img create ./edOS.fs 10G;
     dd if=mid/edOS.img of=edOS.fs seek=0;
 fi
+
+
+
+# recommended run command: 
+#qemu-system-i386\
+#        --machine  q35,accel=kvm\
+#        -m         4096\
+#        -cpu       host\
+#        -smp       8\
+#        --enable-kvm\
+#        -device    usb-ehci,id=ehci0\     not implemented
+#        -device    usb-ehci,id=ehci1\     not implemented
+#        -device    usb-ehci,id=ehci2\     not implemented
+#        -device    intel-hda,id=audio\    not implemented
+#        -device    usb-mouse,bus=ehci0.0\ not implemented
+#        -device    e1000,netdev=net0\
+#        -netdev    user,id=net0\
+#        -device    ich9-ahci,id=ahci\
+#        -device    ide-hd,drive=Disk1,bus=ahci.0\
+#        -drive     file=edOS.fs,format=raw,id=Disk1,if=none,media=disk&
