@@ -7,6 +7,8 @@ mkdir -p obj
 
 set -e
 
+ASM=nasm
+
 CC=gcc-14
 
 LD=ld
@@ -35,10 +37,16 @@ LFLAGS="\
 "
 
 # assemble the bootloader
+echo assembling bootloader with $ASM
 nasm $ASMFLAGS -f bin boot.asm -o mid/boot.bin;
 truncate mid/boot.bin --size 512;
 
+echo assembling assembly kernel with $ASM
+nasm -f bin edOS.asm -o mid/asmraw.bin;
+
 # compile the main kernel
+
+echo compiling main kernel with $CC and $ASM
 $CC $CFLAGS edOS.c                                     -o obj/edOS.o;
 $CC $CFLAGS include/C/Graphics/VESA/VESA.c             -o obj/Graph_VESA.o;
 $CC $CFLAGS include/C/Interrupts/IDT/IDT.c             -o obj/Ints_IDT.o;
@@ -71,8 +79,10 @@ $CC $CFLAGS include/C/FS/FS.c                          -o obj/FS_Main;
 
 nasm $ASMFLAGS -f elf32 include/C/Interrupts/ISRs/ISR.asm -o obj/Asm_ISRs.o;
 
+echo
+
 # link the .o files together
-echo now linking the kernel with ld;
+echo now linking the main kernel with $LD;
 
 $LD $LFLAGS -o mid/elf.elf obj/edOS.o \
  obj/Ints_ISRs.o obj/Asm_ISRs.o obj/Ints_IDT.o  \
@@ -91,7 +101,6 @@ $LD $LFLAGS -o mid/elf.elf obj/edOS.o \
 #obj/Ints_Syscall.o obj/In_Mouse.o obj/Drv_IDE.o obj/CPU_CPUID.o
 
 llvm-objcopy -O binary mid/elf.elf mid/cc.bin;
-nasm -f bin edOS.asm -o mid/asmraw.bin;
 
 echo
 
