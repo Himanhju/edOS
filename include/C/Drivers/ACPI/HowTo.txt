@@ -1,0 +1,47 @@
+ACPI (Advanced Configuration and Power Interface) is a firmware interface that exposes system information like:
+
+    Power states
+
+    Hardware enumeration (similar to device tree)
+
+    Thermal zones
+
+    Embedded controller (EC) access
+
+📜 ACPI Basics
+ACPI tables (e.g., RSDP, FADT, DSDT) are located in memory, not I/O ports. You typically access them by:
+
+    Finding the RSDP (Root System Description Pointer)
+
+    Parsing the RSDT/XSDT to find the rest of the tables
+
+    Interpreting AML (ACPI Machine Language) — often compiled into bytecode inside the DSDT
+
+📍 Finding the RSDP (BIOS Area)
+The RSDP is located either:
+
+    In the EBDA (Extended BIOS Data Area), or
+
+    Between memory addresses 0xE0000–0xFFFFF
+
+Search 16-byte-aligned addresses for the signature "RSD PTR ".
+
+
+Assembly Sketch (pseudo-code style):
+
+mov edi, 0xE0000
+find_rsdp:
+    cmp dword [edi], 'RSD '
+    jne next
+    cmp dword [edi + 4], ' PTR'
+    jne next
+    ; RSDP found at [EDI]
+    ; Verify checksum
+    ; Then parse ACPI tables
+next:
+    add edi, 16
+    cmp edi, 0x100000
+    jb find_rsdp
+
+
+Parsing the tables requires understanding their structure (usually defined in the ACPI Specification).
