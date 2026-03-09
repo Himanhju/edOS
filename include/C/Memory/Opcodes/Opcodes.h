@@ -9,20 +9,20 @@ void Pusha(void);
 //popa opcode which restores all of the registers (note if variables were defined between this and the last pusha opcode this will restore from garbage / unwanted data)
 void Popa(void);
 
-//outb opcode which outputs a byte via an I/O port on the cpu
-void outb(word port, byte val);
-
 //closes interrupts and doesnt let them occur
 void cli(void);
 
 //starts interrupts and lets them occur again if they were turned off
 void sti(void);
 
-//inb opcode which takes a byte from and I/O port on the cpu
-byte inb(word port);
-
 //halts the cpu and prevents execution of all further functions
 void halt(void);
+
+//outb opcode which outputs a byte via an I/O port on the cpu
+void outb(word port, byte val);
+
+//inb opcode which takes a byte from and I/O port on the cpu
+byte inb(word port);
 
 //inw opcode which takes a word from and I/O port on the cpu
 word inw(word port);

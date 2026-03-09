@@ -12,19 +12,21 @@ static volatile HBA_CMD_HEADER (*CMD_Headers[SATA_MAX_PORTS])[SATA_CMD_LIST_LEN]
 static volatile HBA_FIS *FIS_arr[SATA_MAX_PORTS] = {NULL};
 
 byte SATA_Init(byte bus, byte slot, byte func){
-    RGB RED = Get_RGB(0xff0000);
 
-    Enable_Bus_Mastering(bus, slot, func);
+    if(Enable_Bus_Mastering(bus, slot, func) != 0){
+        pstr_8x8("ERR: Failed to enable bus mastering on SATA device\n", FAIL);
+        return 3;
+    }
 
     dword bar_buf = read_bar(bus, slot, func, SATA_REGISTER_BAR);
 
     if(bar_buf == 0){// if no space is reserved for the bar
-        SATA_Regs_Mem = (volatile HBA_MEM *)pmalloc(0x2000, 0x1000);// allocate 8 kb for the registers (rounded up for pages)
+        SATA_Regs_Mem = (volatile HBA_MEM *)pmalloc(0x2000, PAGE_SIZE);// allocate 8 kb for the registers (rounded up for pages)
         write_bar(bus, slot, func, SATA_REGISTER_BAR, (dword)SATA_Regs_Mem);// tell the device this is the bar now
     }else if((bar_buf & 1) == 0){ // if it a valid mmio address
         SATA_Regs_Mem = (volatile HBA_MEM *)(bar_buf & (~((dword)0xF))); // get the mmio
     }else{// if its a pio bar
-        pstr_8x8("could not initialize sata drive: unexpected bar5\n", RED); // print an error
+        pstr_8x8("could not initialize sata drive: unexpected bar5\n", FAIL); // print an error
         return 1;
     }
     psleep(10); // wait for the device to finish setting the registers 
@@ -39,7 +41,7 @@ byte SATA_Init(byte bus, byte slot, byte func){
     }
 
     if(Num_Ports == 0){
-        pstr_8x8("could not initialize sata drive: No Ports\n", RED); // print an error
+        pstr_8x8("could not initialize sata drive: No Ports\n", FAIL); // print an error
         return 2;
     }
 
@@ -136,7 +138,7 @@ void Reset_Port(byte Port_num){
 
 // Start command engine
 void start_cmd(HBA_PORT *port){
-    // Wait until CR (bit15) is cleared
+    // Wait until CR (bit15) is cleaFAIL
     while (port->cmd & HBA_PxCMD_CR);
 
     // Set FRE (bit4) and ST (bit0)
@@ -152,7 +154,7 @@ void stop_cmd(HBA_PORT *port){
     // Clear FRE (bit4)
     port->cmd &= ~((dword)HBA_PxCMD_FRE);
 
-    // Wait until FR (bit14), CR (bit15) are cleared
+    // Wait until FR (bit14), CR (bit15) are cleaFAIL
     while(1){
         if (port->cmd & HBA_PxCMD_FR)
             continue;
@@ -284,12 +286,12 @@ byte sata_write_sector(qword lba, void *buffer){
     cmdfis->command = WRITE_DMA_EXT;
     cmdfis->device = 1 << 6; // LBA mode
 
-    cmdfis->lba0 = (byte)(lba);
-    cmdfis->lba1 = (byte)(lba >> 8);
-    cmdfis->lba2 = (byte)(lba >> 16);
-    cmdfis->lba3 = (byte)(lba >> 24);
-    cmdfis->lba4 = (byte)(lba >> 32);
-    cmdfis->lba5 = (byte)(lba >> 40);
+    cmdfis->lba0 = (byte)((lba) & 0xff);
+    cmdfis->lba1 = (byte)((lba >> 8) & 0xff);
+    cmdfis->lba2 = (byte)((lba >> 16) & 0xff);
+    cmdfis->lba3 = (byte)((lba >> 24) & 0xff);
+    cmdfis->lba4 = (byte)((lba >> 32) & 0xff);
+    cmdfis->lba5 = (byte)((lba >> 40) & 0xff);
 
     cmdfis->countl = 1; // 1 sector
     cmdfis->counth = 0;

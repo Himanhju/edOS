@@ -3,6 +3,7 @@
 #include <Memory/Operations/Operations.h>
 #include <Graphics/VESA/VESA.h>
 #include <Coms/PCI/PCI.h>
+#include <FS/FAT32/FAT32.h>
 
 #include "shell.h"
 
@@ -41,14 +42,57 @@ byte parse(char* input){
     }else if(strncmp("echo", args[0], 5) == 0){
         for(byte i = 1; i < num_input + 1; i++){
             if(args[i][0] == '\0'){
-                pchar_8x8(' ', Get_RGB(0xffffff));
+                pchar_8x8(' ', WHITE);
                 continue;
             }
-            pstr_8x8(args[i], Get_RGB(0xffffff));
-            pchar_8x8(' ', Get_RGB(0xffffff));
+            pstr_8x8(args[i], WHITE);
+            pchar_8x8(' ', WHITE);
         }
     }else if(strncmp("cont", args[0], 5) == 0){
         return 1;
+
+    }else if(strncmp("mkfs.fat32", args[0], 11) == 0){
+
+        //initialize the FS
+        
+        pstr_8x8("\nInitializing FS\n", WHITE);
+        byte Format_return = Format_FAT32();
+        if(Format_return == 0){
+            pstr_8x8("Fat32 formatted\n", WHITE);
+            pstr_8x8("\nFS Initialized\n", SUCCESS);
+
+
+            pstr_8x8("\nMounting FS\n", WHITE);
+
+            switch(Mount_FAT32()){
+            default:
+                pstr_8x8("Failed To Mount FS: Unknown error\n\n", FAIL);
+                break;
+
+            case 1:
+                pstr_8x8("Failed To Mount FS: Couldn't read boot sector\n\n", FAIL);
+                break;
+
+            case 2:
+                pstr_8x8("Failed To Mount FS: Couldn't read FS Info sector\n\n", FAIL);
+                break;
+
+            case 3:
+                pstr_8x8("Failed To Mount FS: Invalid FS ID\n\n", FAIL);
+                break;
+
+            case 0:
+                pstr_8x8("FS Mounted\n\n", SUCCESS);
+            }
+
+        }else{
+            pstr_8x8("Failed To Format as fat32: error code: ", FAIL);
+            pint_8x8((long long)Format_return, FAIL);
+            newline();
+            newline();
+        }
+        
+    
     }else if(strncmp("lspci", args[0], 6) == 0){
         newline();
         newline();
@@ -67,14 +111,15 @@ TMP Shell Built in Commands\n\
     clear: clears the screen\n\
     help: prints this help message\n\
     cont: continues booting to the rest of the OS\n\
+    mkfs: formats the drive as this fs (can be destructive) ex: mkfs.fat32\n\
     \n\
     NOTE: the max length of an argument is 64 characters then it will overflow to the next argument\n"
             ,
-            Get_RGB(0xffffff)
+            WHITE
         );
     }else{
-        pstr_8x8(args[0], Get_RGB(0xffffff));
-        pstr_8x8(": command not found", Get_RGB(0xffffff));
+        pstr_8x8(args[0], WHITE);
+        pstr_8x8(": command not found", WHITE);
     }
     newline();
     return 0;

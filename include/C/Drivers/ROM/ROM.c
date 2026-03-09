@@ -6,10 +6,10 @@ dword EDBA_BASE;
 dword EDBA_SIZE;
 
 void ROM_Init(void){
-    pstr_8x8("Initializing BIOS Data\n", Get_RGB(0xFFFFFF));
+    pstr_8x8("Initializing BIOS Data\n", WHITE);
     EDBA_BASE = (dword)(BDA_Read_Word(BDA_EBDA_BASE) << 4);
     EDBA_SIZE = (dword)((640 - BDA_Read_Word(BDA_KB_BEF_EBDA)) * 1024);
-    pstr_8x8("BIOS Data Initialized Successfully\n\n", Get_RGB(0x7CFC00));
+    pstr_8x8("BIOS Data Initialized Successfully\n\n", SUCCESS);
 }
 
 #pragma GCC diagnostic push

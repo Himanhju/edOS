@@ -12,6 +12,7 @@ static byte *Heap_Pos = (byte *)HEAP_BOTTOM;
 static void *align(void *addr, dword bytes){
     return (void *)(((dword)((byte *)addr) + (bytes - 1)) & (dword)(~(bytes - 1)));
 }
+
 /*
 better writen version:
 
@@ -20,7 +21,7 @@ void *align(void *addr, dword bytes){
     dword aligned = (p + (bytes - 1)) & ~(bytes - 1);
     return (void *)aligned;
 }
- */
+*/
 
 const void *Palloc_Get_Heap_Pos(void){
     return Heap_Pos;

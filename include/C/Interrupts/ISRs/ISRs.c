@@ -22,10 +22,10 @@ void ISR_Handler_divide_error(void){ // Interrupt 0x00 - Divide Error
     
     // Handle the divide error here
     clr_scrn();
-    pstr_8x8("ERR: DIV 0: HALTING", Get_RGB(0xFF0000));
+    pstr_8x8("ERR: DIV 0: HALTING", FAIL);
     asm("cli\n" "hlt");
 }
-    //if you divide by 0 the computer will halt
+    //if you divide by 0 the computer will halt (C doesnt use div instruction so it wont run)
 void ISR_Handler_debug(void){ // Interrupt 0x01 - Debug Exception
     
     // Handle the debug exception here
@@ -60,7 +60,7 @@ void ISR_Handler_invalid_opcode(void){ // Interrupt 0x06 - Invalid Opcode Except
     
     // Handle the invalid opcode exception here
     clr_scrn();
-    pstr_8x8("ERR: INVALID OPCODE: HALTING", Get_RGB(0xff0000));
+    pstr_8x8("ERR: INVALID OPCODE: HALTING", FAIL);
     asm("cli\n" "hlt");
     
 }
@@ -74,7 +74,7 @@ void ISR_Handler_double_fault(void){ // Interrupt 0x08 - Double Fault Exception
     
     // Handle the double fault exception here
     clr_scrn();
-    pstr_8x8("ERR: DOUBLE FAULT: HALTING", Get_RGB(0xFF0000));
+    pstr_8x8("ERR: DOUBLE FAULT: HALTING", FAIL);
     asm("cli\n" "hlt");
     
 }

@@ -1,11 +1,27 @@
 #include <Memory/Operations/Operations.h>
 #include <Graphics/VESA/VESA.h>
+#include <Memory/Opcodes/Opcodes.h>
 
 #include "ACPI.h"
 
 static struct XSDP_t *SDP;
 static struct ACPISDTHeader *SDT;
-static struct ACPISDTHeader *FCAP; // really called FADT but i liked FCAP after i mispelled the signiture so much i changed it
+static struct FADT *FCAP; // really called FADT but i liked FCAP after i mispelled the signiture so much i changed it
+static struct ACPISDTHeader *DSDT;
+
+/*
+static char *S5Addr = NULL;
+static dword *SMI_CMD;
+static byte ACPI_ENABLE;
+static byte ACPI_DISABLE;
+static dword *PM1a_CNT;
+static dword *PM1b_CNT;
+static word SLP_TYPa;
+static word SLP_TYPb;
+static word SLP_EN;
+static word SCI_EN;
+static byte PM1_CNT_LEN;
+*/
 
 byte ACPI_Init(void){
 
@@ -57,10 +73,29 @@ byte ACPI_Init(void){
         FCAP = findFACP_XSDT(SDT);
     }
 
-    if(Check_FCAP(FCAP) != 0){
+    if(Check_Header((struct ACPISDTHeader*)FCAP) != 0){
         //pstr_8x8("could not initialize acpi: Invalid FCAP Checksum\n", white);
         return 5;
     }
+
+    DSDT = (struct ACPISDTHeader*)(FCAP->Dsdt);
+
+    if(Check_Header(DSDT) != 0){
+        return 6;
+    }
+
+
+/*
+#include <Drivers/Disk/Disk.h>
+    
+    Bulk_Write_Sectors(500, DSDT, ((word)(DSDT->Length/SECTOR_SIZE))+1);
+
+    pstr_8x8("AML writen to address: ", WHITE);
+    phex_8x8(500 * 0x200, WHITE);
+    newline();
+    pstr_8x8("sectors writen: ", WHITE);
+    pint_8x8(((word)(DSDT->Length/SECTOR_SIZE))+1, WHITE);
+    newline();*/
 
 
     return 0;
@@ -161,12 +196,12 @@ void *findFACP_XSDT(void *XSDT){
     return NULL;
 }
 
-byte Check_FCAP(struct ACPISDTHeader *fcap){
-    byte *FCAP_Byte = (byte *)fcap;
+byte Check_Header(struct ACPISDTHeader *Header){
+    byte *Header_Byte = (byte *)Header;
     dword checksum = 0;
 
-    for(word i = 0; i < fcap->Length; i++){
-        checksum += FCAP_Byte[i];
+    for(word i = 0; i < Header->Length; i++){
+        checksum += Header_Byte[i];
     }
 
     return (byte)(checksum & 0xFF);

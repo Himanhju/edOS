@@ -55,21 +55,22 @@ void Get_Str(unsigned int max, char* output, RGB color){
             Move_Cursor_Left();
 
             for(unsigned int o = i; o < max; o++){
-                output[o] = '\0';
+                output[o] = '\0'; // null terminate
             }
+            
             break;
         } else if(key.Ascii == 8 /*backspace*/){
-            if(i < 1){
+            if(i < 1){// if its at the beginning dont move
 				i--;
 				continue;
 			}
 
-            pchar_8x8(' ', color);
+            pchar_8x8(' ', color); // remove the underscore for the curser
             Move_Cursor_Left();
 
 			i -= 2;
 			Move_Cursor_Left();
-            pchar_8x8(0, color);
+            pchar_8x8(0, color); // actually remove the character
             Move_Cursor_Left();
 			continue;
         }

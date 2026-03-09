@@ -6,7 +6,7 @@
 #define SECT_PER_CLUST      16
 #define BYTES_PER_CLUST     (SECT_PER_CLUST * SECTOR_SIZE)
 #define NUM_FATS            2
-#define NUM_SECTS           0x200000 * 10
+#define NUM_SECTS           0x4000000 * SECT_PER_CLUST
 #define FAT_ENTS_PER_SECT   (SECTOR_SIZE / sizeof(dword))
 
 #define EOC                 0x0FFFFFFF
@@ -14,13 +14,13 @@
 #define FREE                0x00000000
 #define DEV                 0x0ffffffa
 
-#define FAT32_ATTR_RO       0x01
-#define FAT32_ATTR_HIDDEN   0x02
-#define FAT32_ATTR_SYSTEM   0x04
-#define FAT32_ATTR_VOLUME   0x08
-#define FAT32_ATTR_DEV      0x00 // Device File, Stores Data On Devices/In Memory (ex: framebuffer, Drives, Input, Inet, etc.)
-#define FAT32_ATTR_SUBDIR   0x10
+#define FAT32_ATTR_RO       0x01 // read only
+#define FAT32_ATTR_HIDDEN   0x02 // not going to be shown when looked for but will be edited if directly edited
+#define FAT32_ATTR_SYSTEM   0x04 // a system file (important files)
+#define FAT32_ATTR_VOLUME   0x08 // other filesystem
+#define FAT32_ATTR_SUBDIR   0x10 // directory inside the root directory
 #define FAT32_ATTR_FILE     0x20 // Normal File, Stores Data On The Drive
+#define FAT32_ATTR_DEV      0x40 // Device File, Stores Data On Devices/In Memory (ex: framebuffer, Drives, Input, Inet, etc.)
 
 #define DIR_CLUSTER         2
 
@@ -115,11 +115,11 @@ byte Create_File(char* filename, dword creat_flags, dword cluster, word entry);
 
 /**  opens a file in the open files table
  *   
- * @param path          the path to the file you would like to open (keep the max path lenth in mind)
+ * @param path          the path to the file to open (keep the max path lenth in mind)
  * 
- * @param access_flags  how you would like to access the file (ex: RO WO TRUNC APPEND CREAT, ...)
+ * @param access_flags  how to access the file (ex: RO WO TRUNC APPEND CREAT, ...)
  * 
- * @param creat_flags   not necissary if you arent making a file, can just be 0 if system is equal to 0, but if system is 1 then it will create a device file
+ * @param creat_flags   not necissary if not making a file, can just be 0 if system is equal to 0, but if system is 1 then it will create a device file
  * 
  * @param system        control the privelige always set to 0 through syscalls and could always be 1 when the kernel is running it (has to be 1 to create a device)
 */

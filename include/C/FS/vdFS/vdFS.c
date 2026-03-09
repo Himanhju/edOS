@@ -295,7 +295,7 @@ Check_Sector:
         }
     }
     
-    //pstr_8x8(Metadata.Entries[0].Entname, Get_RGB(0xffffff));
+    //pstr_8x8(Metadata.Entries[0].Entname, WHITE);
 
     return Write_Sector(Sector, &Metadata); // write the Sector with the Metadata
 }
@@ -439,7 +439,7 @@ byte add_Dir_With_Path(char* Path){
 
     dword Dir_Sector = get_Dir_Sector_From_Path_Absolute(Dir_Path); // get the sector
 
-    //pint_8x8(Dir_Sector, Get_RGB(0xffffff));
+    //pint_8x8(Dir_Sector, WHITE);
 
     Dir_Entry Entry;
     Entry.flags = ENTRY_ALLOCATED_FLAG | DIRECTORY_FLAG;
@@ -452,8 +452,8 @@ byte add_Dir_With_Path(char* Path){
 //writes to a file's data sectors (0 = first sector, 1 = second sector) only 508 bytes per sector
 void write_file_Sector(char* Path, dword Sector, void* buf){
     dword Original_Metadata_Sector = get_file_Metadata_Sector_From_Path_Absolute(Path);
-    pstr_8x8("OMS: ", Get_RGB(0xffffff));
-    pbin_8x8(Original_Metadata_Sector, Get_RGB(0xffffff));
+    pstr_8x8("OMS: ", WHITE);
+    pbin_8x8(Original_Metadata_Sector, WHITE);
     newline();
     File_Metadata Metadata;
 
@@ -477,8 +477,8 @@ void write_file_Sector(char* Path, dword Sector, void* buf){
 
     lba = Hex_To_Dec_Short(Metadata.Entries[Internal_Sector].Sector); // lba now holds the sector to write to
 
-    pstr_8x8("lba: ", Get_RGB(0xffffff));
-    pbin_8x8(lba, Get_RGB(0xffffff));
+    pstr_8x8("lba: ", WHITE);
+    pbin_8x8(lba, WHITE);
     newline();
 
     Read_Sector(lba, &Metadata); // read to get the flags

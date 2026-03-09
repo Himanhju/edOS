@@ -21,6 +21,7 @@
 
 #define PAGE_MEM_TOP        0x00502000
 
+#define PAGE_SIZE           0x1000
 
 void Page_Init(void);
 

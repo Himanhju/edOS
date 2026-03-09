@@ -2,6 +2,7 @@
 #define PALLOC_H
 
 #include <Types/Common.h>
+#include <Memory/Paging/Paging.h>
 
 #define HEAP_BOTTOM 0x04000000 // 64 mb
 #define HEAP_TOP    0x10000000 //256 mb

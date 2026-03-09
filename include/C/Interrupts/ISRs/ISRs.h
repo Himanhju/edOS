@@ -77,7 +77,7 @@ extern void ISR_syscall(void); // Interrupt 0x80 - Syscall
 //Empty Initializer
 extern void ISR_empty(void);
 
-//if you divide by 0 the computer will halt
+//if you divide by 0 the computer will halt (C doesnt use div instruction so it wont run)
 void ISR_Handler_divide_error(void);
     
 void ISR_Handler_debug(void);

@@ -14,6 +14,18 @@ typedef struct RGB{
     byte r;  // Blue channel (0-255)
 } RGB;
 
+#define WHITE   (Get_RGB(0xFFFFFF))
+#define BLACK   (Get_RGB(0x000000))
+#define RED     (Get_RGB(0xFF0000))
+#define GREEN   (Get_RGB(0x00FF00))
+#define BLUE    (Get_RGB(0x0000FF))
+#define YELLOW  (Get_RGB(0xFFFF00))
+#define PURPLE  (Get_RGB(0xFF00FF))
+#define TEAL    (Get_RGB(0x00FFFF))
+
+#define SUCCESS (Get_RGB(0x7CFC00))
+#define FAIL    (Get_RGB(0xff0033))
+
 #define PIXEL_WIDTH  1024
 #define PIXEL_HEIGHT 768
 

@@ -17,15 +17,15 @@ dword Total_Clusters;
 OpenFile open_file_table[MAX_OPEN_FILES] = {0};
 
 byte Format_FAT32(void){
-    pstr_8x8("\nFormatting drive as FAT32\n", Get_RGB(0xffffff));
+    pstr_8x8("Formatting drive as FAT32\n", WHITE);
 
     // ---- Choose geometry ----
-    const uint16_t byps = SECTOR_SIZE;               // 512
-    const uint8_t  spc  = SECT_PER_CLUST;            // 8 sectors/cluster -> 4 KiB clusters
-    const uint16_t rsvd = FIRST_FREE_SECTOR;         // reserved sectors (>=32 typical)
-    const uint8_t  nfats= NUM_FATS;                  // 2 FATs
-    const uint8_t  media= 0xF8;                      // fixed disk
-    const uint32_t totsec = NUM_SECTS;               // EXAMPLE: 2,097,152 sectors (~1 GiB). Replace with real size.
+    const uint16_t byps   = SECTOR_SIZE;               // 512
+    const uint8_t  spc    = SECT_PER_CLUST;            // 8 sectors/cluster -> 4 KiB clusters
+    const uint16_t rsvd   = FIRST_FREE_SECTOR;         // reserved sectors (>=32 typical)
+    const uint8_t  nfats  = NUM_FATS;                  // 2 FATs
+    const uint8_t  media  = 0xF8;                      // fixed disk
+    const uint32_t totsec = NUM_SECTS;                 // EXAMPLE: 2,097,152 sectors (~1 GiB). Replace with real size.
 
     // ---- Fill BPB (Volume Boot Record) ----
     //OEM
@@ -61,6 +61,7 @@ byte Format_FAT32(void){
         fatsz32 = new_fatsz32;
         if (!fatsz32) fatsz32 = 1;
     }
+    
     boot_sector->BP_Block.count_sectors_per_FAT32 = fatsz32;
 
     // Remaining BPB ext fields
@@ -129,10 +130,9 @@ byte Format_FAT32(void){
     // Zero the remainder of both FATs
     memset(sec, 0x00, sizeof(sec));
 
-    phex_8x8(fat_sectors, Get_RGB(0xffffff));
-    newline();
+    pstr_8x8("\nzeroing the FAT, (This may take a while)\n", WHITE);
 
-    for (uint32_t s = 1; s < fat_sectors; s++){
+    for (uint32_t s = 1; s < fat_sectors + 1; s++){
         if(Write_Sector(fat0_lba + s, sec) != 0){
             return 6;
         } 
@@ -157,7 +157,7 @@ byte Format_FAT32(void){
     superblock.info.magic = 0xa20Fac76;
     superblock.info.root_dir_start = root_lba;
 
-    pstr_8x8("FAT32 format complete\n", Get_RGB(0x7CFC00));
+    pstr_8x8("FAT32 format complete\n", SUCCESS);
     
     return 0;
 }
@@ -600,8 +600,8 @@ int open_file(const char *path, dword access_flags, dword creat_flags, byte syst
                 if(cluster_buf[i].filename[0] == (char)0xE5 || cluster_buf[i].filename[0] == 0x00){
                     if((type & O_CREAT) != 0){
                         // create the file
-                        if(creat_flags == 0 && system == 0){
-                            //a user program either tried to make a device file (not allowed), or forgot to input
+                        if(creat_flags == 0 || (((creat_flags & FAT32_ATTR_DEV) != 0) && system == 0)){
+                            //a user program forgot to input the flags or tried to make a device file (not allowed)
                             return -10;
                         }
 
@@ -724,13 +724,13 @@ int read_file(int fd, void *buf, int bytes){
 
     int bytes_read = 0;
 
-//    open_file_table[fd].cur_cluster; // the cluster that we are writing to right now
-//    open_file_table[fd].file_size; // the size of the file (writer changes that)
-//    open_file_table[fd].mode; // the mode it was opened (ex: RO, WO, RW, AP)
-//    open_file_table[fd].pos; // the position in the cur_cluster were writing to
-//    open_file_table[fd].start_cluster; // the start cluster, not really useful here
+//  open_file_table[fd].cur_cluster; // the cluster that we are writing to right now
+//  open_file_table[fd].file_size; // the size of the file (writer changes that)
+//  open_file_table[fd].mode; // the mode it was opened (ex: RO, WO, RW, AP)
+//  open_file_table[fd].pos; // the position in the cur_cluster were writing to
+//  open_file_table[fd].start_cluster; // the start cluster, not really useful here
 
-//read code
+//  read code
 
 
     return bytes_read;

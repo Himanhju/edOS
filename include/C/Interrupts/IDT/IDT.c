@@ -95,7 +95,7 @@ static void load_IDT(void){
 #pragma GCC diagnostic ignored "-Wpedantic"
 
 void IDT_Init(void){
-    pstr_8x8("Initializing IDT\n", Get_RGB(0xffffff));
+    pstr_8x8("Initializing IDT\n", WHITE);
 
     PIT_Set_Interval(1000); // Set PIT interval to 100 Hz (10 ms per tick)
 
@@ -138,7 +138,7 @@ void IDT_Init(void){
 
     asm("sti");
 
-    pstr_8x8("IDT Initialized Successfully\n\n", Get_RGB(0x7CFC00));
+    pstr_8x8("IDT Initialized Successfully\n\n", SUCCESS);
 }
 
 #pragma GCC diagnostic pop

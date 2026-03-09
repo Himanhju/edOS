@@ -4,11 +4,10 @@
 #include <Drivers/ROM/ROM.h>
 #include <Coms/PCI/PCI.h>
 #include <Coms/IO/IO.h>
-#include <Drivers/Disk/Disk.h>
 #include <Memory/Operations/Operations.h>
 #include <Scheduler/Scheduler.h>
 #include <General/Info/Info.h>
-#include <FS/FAT32/FAT32.h>
+#include <Drivers/Disk/Disk.h>
 #include <General/shell/shell.h>
 #include <Input/Keyboard/Keyboard.h>
 #include <General/Time/Time.h>
@@ -35,48 +34,18 @@ void _start(void){
     //initialize the IO_RAM and IO ports for communication
     IO_Init();
 
-    //initialize the FS, superblock, and directories
-    if(Check_First_Boot() == 0){
-        pstr_8x8("Initializing FS\n", Get_RGB(0xffffff));
+    Scancode = 0;
 
-        Format_FAT32();
-    
+    if(Check_First_Boot() == 0){
         superblock.info.is_first_boot = 1;
         Superblock_Init();
-
-        pstr_8x8("\nFS Initialized\n", Get_RGB(0xffffff));
     }else{
         Read_Superblock();
     }
 
-    pstr_8x8("\nMounting FS\n", Get_RGB(0xffffff));
-
-    switch(Mount_FAT32()){
-    default:
-        pstr_8x8("Failed To Mount FS: Unknown error\n\n", Get_RGB(0xff0033));
-        break;
-
-    case 1:
-        pstr_8x8("Failed To Mount FS: Couldn't read boot sector\n\n", Get_RGB(0xff0033));
-        break;
-
-    case 2:
-        pstr_8x8("Failed To Mount FS: Couldn't read FS Info sector\n\n", Get_RGB(0xff0033));
-        break;
-
-    case 3:
-        pstr_8x8("Failed To Mount FS: Invalid FS ID\n\n", Get_RGB(0xff0033));
-        break;
-
-    case 0:
-        pstr_8x8("FS Mounted\n\n", Get_RGB(0x7CFC00));
-    }
-
-    Scancode = 0;
-
     for(int i = 0; i < 400; i++){
         if((Scancode & ~0x80) == 1 && Key_Pressed == 1){ // if diagnostics is needed
-            pstr_8x8("\n\nEntering Diagnostics Mode\n\n", Get_RGB(0xffffff));
+            pstr_8x8("\n\nEntering Diagnostics Mode\n\n", WHITE);
             while((Scancode & ~0x80) != 28); // wait for user to continue
         }
         psleep(1);
@@ -95,15 +64,22 @@ void _start(void){
         strcpy("echo Hello wecome to the EDOS tmp shell you can enter cont to continue booting and help to see the built in commands\n", buffer, 0);
 
         while(parse((char *)buffer) == 0){
-            pstr_8x8(">>> ", Get_RGB(0xffffff));
-            Get_Str(MAX_ARG_SIZE * 16, buffer, Get_RGB(0xFFFFFF));
+            pstr_8x8(">>> ", WHITE);
+            Get_Str(MAX_ARG_SIZE * 16, buffer, WHITE);
         }
     }
+ 
+//========================TMP=========================
 
+    #include <Memory/Opcodes/Opcodes.h>
+
+    outw(0x604, 0x2000);
+
+//====================================================
     
     OS_CTRL = 0;  // tell the scheduler that initialization is done and it can schedule threads
 
-    pstr_8x8("\n\nreached the end\n", Get_RGB(0xffffff));
+    pstr_8x8("\n\nreached the end\n", WHITE);
 
 OS_LOOP:
 

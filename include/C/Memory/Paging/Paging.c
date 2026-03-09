@@ -6,7 +6,7 @@ dword* const page_directory = (dword*) PAGE_DIR_BASE;
 dword* const page_tables = (dword*) PAGE_TABLES_BASE; // Flat 1024 * 1024
 
 void Page_Init(void) {
-    pstr_8x8("Enabling Paging\n", Get_RGB(0xffffff));
+    pstr_8x8("Enabling Paging\n", WHITE);
     for (unsigned int i = 0; i < 1024; i++) {
         dword* table = page_tables + i * 1024; // Each page table is 4KB (1024 dwords)
 
@@ -27,7 +27,7 @@ void Page_Init(void) {
         :
         : "eax", "memory"
     );
-    pstr_8x8("Paging Enabled Successfully\n\n", Get_RGB(0x7CFC00));
+    pstr_8x8("Paging Enabled Successfully\n\n", SUCCESS);
 }
 
 void Remap_Page(dword virtual_addr, dword physical_addr, dword flags) {
@@ -36,7 +36,7 @@ void Remap_Page(dword virtual_addr, dword physical_addr, dword flags) {
 
     // Ensure the page table is present
     if (!(page_directory[pd_index] & PAGE_PRESENT)) {
-        // You can add dynamic page table allocation here if needed
+        // TODO: Add dynamic page table allocation
         return; // Page table not present — can't remap
     }
 
@@ -46,7 +46,3 @@ void Remap_Page(dword virtual_addr, dword physical_addr, dword flags) {
     // Invalidate the TLB for the specific virtual address
     asm volatile ("invlpg (%0)" :: "r"(virtual_addr) : "memory");
 }
-
-//flush tlb:
-//  dword addr = 0x00100000;
-//  asm volatile ("invlpg (%0)" :: "r"(addr) : "memory");

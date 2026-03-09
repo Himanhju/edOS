@@ -39,11 +39,12 @@ enum Disk_ID Disk_Init(void){
                         if(NVMe_Init((byte)bus & 0xFF, slot, func) == 0){
                             Disk = NVME;
                         }
+                        
 
                         break;
 
                     case ((int)INTEL_CHIPSET_ATA_ID):
-                        Disk = ATA;
+                        Disk = ATA; // no setup required
                         break;
 
                     default:
@@ -79,7 +80,7 @@ byte Read_Sector(dword lba, void *buffer){
     switch(Disk){
         case ATA:  return ata_read_sector(lba, buffer);
         case SATA: return sata_read_sector(lba, buffer);
-        case NVME: return nvme_read_sector(lba, buffer);
+        //case NVME: return nvme_read_sector(lba, buffer);
 
         default:   return ata_read_sector(lba, buffer);
     }
@@ -89,6 +90,7 @@ byte Write_Sector(dword lba, void *buffer){
     switch(Disk){
         case ATA:  return ata_write_sector(lba, buffer);
         case SATA: return sata_write_sector(lba, buffer);
+        //case NVME: return nvme_read_sector(lba, buffer);
 
         default:   return ata_write_sector(lba, buffer);
     }
@@ -98,6 +100,7 @@ byte Bulk_Read_Sectors(dword Start_lba, void *buffer, word Sectors){
     switch(Disk){
         case ATA:  return ata_bulk_read_sectors(Start_lba, buffer, Sectors);
         case SATA: return sata_bulk_read_sectors(Start_lba, buffer, Sectors);
+        //case NVME: return nvme_read_sector(lba, buffer);
 
         default:   return ata_bulk_read_sectors(Start_lba, buffer, Sectors);
     }
@@ -107,6 +110,7 @@ byte Bulk_Write_Sectors(dword Start_lba, void *buffer, word Sectors){
     switch(Disk){
         case ATA:  return ata_bulk_write_sectors(Start_lba, buffer, Sectors);
         case SATA: return sata_bulk_write_sectors(Start_lba, buffer, Sectors);
+        //case NVME: return nvme_read_sector(lba, buffer);
 
         default:   return ata_bulk_read_sectors(Start_lba, buffer, Sectors);
     }

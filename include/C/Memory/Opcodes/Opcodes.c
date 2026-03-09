@@ -10,20 +10,24 @@ void Popa(void){
     asm("popa");
 }
 
-void outb(word port, byte val) {
-    __asm__ volatile (
-        "outb %0, %1"
-        :
-        : "a"(val), "Nd"(port)
-    );
-}
-
 void cli(void){
     asm("cli");
 }
 
 void sti(void){
     asm("sti");
+}
+
+void halt(void){
+    asm("cli\n" "hlt");
+}
+
+void outb(word port, byte val) {
+    __asm__ volatile (
+        "outb %0, %1"
+        :
+        : "a"(val), "Nd"(port)
+    );
 }
 
 byte inb(word port){
@@ -34,10 +38,6 @@ byte inb(word port){
         : "d"(port)          // input: port number in DX
     );
     return data;
-}
-
-void halt(void){
-    asm("cli\n" "hlt");
 }
 
 word inw(word port){

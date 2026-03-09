@@ -27,13 +27,12 @@ byte *(tx_buffers[NUM_TX_DESC]);//[PACKET_SIZE];
 
 
 byte e1000_Init(byte bus, byte slot, byte func){
-    RGB white = Get_RGB(0xffffff);
 
     NIC_version = PCI_Index[bus][slot][func][DEVICE]; // keep which nic it is in memory
     
     e1000_Regs_Mem = (byte *)read_bar(bus, slot, func, 0);
     if((((dword)e1000_Regs_Mem) & 0x00000006) >> 1 == 2){
-        pstr_8x8("64-Bit address returned?????\n", white); // SHOULDN'T BE RUN, WE HAVE PROBLEMS IF IT IS
+        pstr_8x8("64-Bit address returned?????\n", FAIL); // SHOULDN'T BE RUN, WE HAVE PROBLEMS IF IT IS
     }else{
         e1000_Regs_Mem = (void *)(((dword)e1000_Regs_Mem) & 0xFFFFFFF0);
     }
@@ -48,7 +47,7 @@ byte e1000_Init(byte bus, byte slot, byte func){
     }
 
     if(e1000_Base_Port == 0xFFFF){
-        pstr_8x8("Could not initialize the NIC: no window\n", white);
+        pstr_8x8("Could not initialize the NIC: no window\n", FAIL);
         return 2;
     }
     
@@ -56,7 +55,7 @@ byte e1000_Init(byte bus, byte slot, byte func){
     
 
     if(Enable_Bus_Mastering(bus, slot, func) != 0){
-        pstr_8x8("Could not initialize the NIC: bus mastering failed\n", white);
+        pstr_8x8("Could not initialize the NIC: bus mastering failed\n", FAIL);
         return 1;
     }
 

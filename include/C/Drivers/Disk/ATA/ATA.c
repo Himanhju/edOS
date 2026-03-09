@@ -5,30 +5,30 @@
 
 void ata_print_err(byte error){
     if((error & 0x1) != 0){
-        pstr_8x8("Address Mark Not Found\n", Get_RGB(0xffffff));
+        pstr_8x8("Address Mark Not Found\n", FAIL);
     }
     if((error & 0x2) != 0){
-        pstr_8x8("Track 0 Not Found\n", Get_RGB(0xffffff));
+        pstr_8x8("Track 0 Not Found\n", FAIL);
     }
     if((error & 0x4) != 0){
-        pstr_8x8("Command Aborted\n", Get_RGB(0xffffff));
+        pstr_8x8("Command Aborted\n", FAIL);
     }
     if((error & 0x8) != 0){
-        pstr_8x8("Media Change Request\n", Get_RGB(0xffffff));
+        pstr_8x8("Media Change Request\n", FAIL);
     }
     if((error & 0x10) != 0){
-        pstr_8x8("ID Not Found\n", Get_RGB(0xffffff));
+        pstr_8x8("ID Not Found\n", FAIL);
     }
     if((error & 0x20) != 0){
-        pstr_8x8("Media Changed\n", Get_RGB(0xffffff));
+        pstr_8x8("Media Changed\n", FAIL);
     }
     if((error & 0x40) != 0){
-        pstr_8x8("Uncorrectable data Error\n", Get_RGB(0xffffff));
+        pstr_8x8("Uncorrectable data Error\n", FAIL);
     }
     if((error & 0x80) != 0){
-        pstr_8x8("Bad Block Detected\n", Get_RGB(0xffffff));
+        pstr_8x8("Bad Block Detected\n", FAIL);
     }else if(error == 0){
-        pstr_8x8("No err\n", Get_RGB(0xffffff));
+        pstr_8x8("Command ran without error\n", SUCCESS);
     }
 }
 
@@ -40,11 +40,11 @@ byte ata_write_sector(dword lba, void *buffer) {
     while(!(inb(0x1F7) & 0x40));
 
     // Send drive/head LBA info, and command to write
-    outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F));
     outb(0x1F2, 1);                      // Sector count
     outb(0x1F3, (byte)lba);              // LBA low
     outb(0x1F4, (byte)(lba >> 8));       // LBA mid
     outb(0x1F5, (byte)(lba >> 16));      // LBA high
+    outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F));
     outb(0x1F7, WRITE_SECTORS);          // Command: WRITE SECTOR
 
     // Check for ERR
@@ -87,11 +87,11 @@ byte ata_read_sector(dword lba, void *buffer) {
     while(!(inb(0x1F7) & 0x40));
 
     // Send drive/head, LBA info then tell it to execute the read 
-    outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F));
     outb(0x1F2, 1);                      // Sector count
     outb(0x1F3, (byte)lba);              // LBA low
     outb(0x1F4, (byte)(lba >> 8));       // LBA mid
     outb(0x1F5, (byte)(lba >> 16));      // LBA high
+    outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F));
     outb(0x1F7, READ_SECTORS);           // Command: READ SECTOR
     
     // Check for ERR

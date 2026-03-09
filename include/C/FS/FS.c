@@ -8,14 +8,13 @@
 
 // prompt the user for which filesystem they want and use that as the filesystem (if the input is unexpected then use vdFS)
 void FS_Init(void){
-    RGB white = Get_RGB(0xffffff);
     
     char buf[32] = {0};
 
 ask:
 
-    pstr_8x8("\n\nvdFS (experimental): 1\nCFS (not done): 2\nSectors (no files/directories): 3\nPick a FS: ", white);
-    Get_Str(sizeof(buf), buf, white);
+    pstr_8x8("\n\nvdFS (experimental): 1\nCFS (not done): 2\nSectors (no files/directories): 3\nPick a FS: ", WHITE);
+    Get_Str(sizeof(buf), buf, WHITE);
     newline();
 
     if(strncmp("1", buf, strlen(buf))){

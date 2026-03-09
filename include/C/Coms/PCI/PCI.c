@@ -131,7 +131,7 @@ word pciCheckDevice(byte bus, byte slot){
 
 // PCI device information structure
 void PCI_Init(void) {
-    pstr_8x8("Initializing the PCI Device Index\n", Get_RGB(0xFFFFFF));
+    pstr_8x8("Initializing the PCI Device Index\n", WHITE);
     for (word bus = 0; bus < BUSSES; bus++) {
         for (byte slot = 0; slot < SLOTS; slot++) {
             for (byte func = 0; func < FUNCS; func++) {
@@ -159,7 +159,7 @@ void PCI_Init(void) {
             }
         }
     }
-    pstr_8x8("PCI Device Index Initialized Successfully\n\n", Get_RGB(0x7CFC00));
+    pstr_8x8("PCI Device Index Initialized Successfully\n\n", SUCCESS);
 }
 
 void Print_All_Connected_PCI_Devices(){
@@ -168,20 +168,20 @@ void Print_All_Connected_PCI_Devices(){
         for(byte s = 0; s < Highs.slot; s++){
             for(byte f = 0; f < Highs.func; f++){
                 if(PCI_Index[b][s][f][VENDOR] != 0xFFFF){
-                    pint_8x8(b, Get_RGB(0xffffff));
-                    pchar_8x8(',', Get_RGB(0xffffff));
-                    pint_8x8(s, Get_RGB(0xffffff));
-                    pchar_8x8(',', Get_RGB(0xffffff));
-                    pint_8x8(f, Get_RGB(0xffffff));
+                    pint_8x8(b, WHITE);
+                    pchar_8x8(',', WHITE);
+                    pint_8x8(s, WHITE);
+                    pchar_8x8(',', WHITE);
+                    pint_8x8(f, WHITE);
                     newline();
-                    pstr_8x8("vendor: ", Get_RGB(0xffffff));
+                    pstr_8x8("vendor: ", WHITE);
                     Dec_To_Hex(PCI_Index[b][s][f][VENDOR], HEX);
-                    pstr_8x8(HEX, Get_RGB(0xffffff));
+                    pstr_8x8(HEX, WHITE);
                     memset(HEX, 0, 9);
                     newline();
-                    pstr_8x8("Device: ", Get_RGB(0xffffff));
+                    pstr_8x8("Device: ", WHITE);
                     Dec_To_Hex(PCI_Index[b][s][f][DEVICE], HEX);
-                    pstr_8x8(HEX, Get_RGB(0xffffff));
+                    pstr_8x8(HEX, WHITE);
                     memset(HEX, 0, 9);
                     newline();
                     newline();

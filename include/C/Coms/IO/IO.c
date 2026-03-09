@@ -22,22 +22,20 @@ enum IO_Type check_IO_type(byte bus, byte slot, byte func, byte bar_num){
 }
 
 void IO_Init(void){
-    RGB RED = Get_RGB(0xff0033);
-    RGB white = Get_RGB(0xffffff);
 
-    pstr_8x8("Initializing IO Devices\n", white);
+    pstr_8x8("Initializing IO Devices\n", WHITE);
 
     // identify supported devices and vendors (so much for temporary)
     dword IO_Support = IO_Identify(); 
     if(((IO_Support >> 16) & 0xffff) != 0){
-        pstr_8x8("\nNumber Of Vendors Unsupported: ", RED);
-        pint_8x8((IO_Support >> 16) & 0xffff, RED);
+        pstr_8x8("\nNumber Of Vendors Unsupported: ", FAIL);
+        pint_8x8((IO_Support >> 16) & 0xffff, FAIL);
         newline();
         newline();
     }
     if((IO_Support & 0xffff) != 0){
-        pstr_8x8("\nNumber Of Devices Unsupported: ", RED);
-        pint_8x8(IO_Support & 0xffff, RED);
+        pstr_8x8("\nNumber Of Devices Unsupported: ", FAIL);
+        pint_8x8(IO_Support & 0xffff, FAIL);
         newline();
         newline();
     }
@@ -45,15 +43,15 @@ void IO_Init(void){
     // Dectect Disk types
     switch(Disk_Init()){
         case ATA:
-            pstr_8x8("\nATA Drive Detected using ATA driver\n", white);
+            pstr_8x8("\nATA Drive Detected using ATA driver\n", WHITE);
             break;
 
         case SATA:
-            pstr_8x8("\nSATA Drive Detected using SATA driver\n", white);
+            pstr_8x8("\nSATA Drive Detected using SATA driver\n", WHITE);
             break;
 
         case NVME:
-            pstr_8x8("\nNVME Drive Detected using NVME driver\n", white);
+            pstr_8x8("\nNVME Drive Detected using NVME driver\n", WHITE);
             break;
 
         default:
@@ -66,7 +64,7 @@ void IO_Init(void){
 
     switch(Inet_Init()){
         case E1000:
-            pstr_8x8("E1000 NIC Detected Using E1000 driver\n", white);
+            pstr_8x8("E1000 NIC Detected Using E1000 driver\n", WHITE);
             break;
 
         default:
@@ -75,37 +73,43 @@ void IO_Init(void){
     }
     
     switch(ACPI_Init()){
+        default:
+            pstr_8x8("ERR: could not initialize acpi: Unknown Error\n", FAIL);
+            break;
         
         case 2:
-            pstr_8x8("ERR: could not initialize acpi: Invalid SDP Checksum\n", white);
+            pstr_8x8("ERR: could not initialize acpi: Invalid SDP Checksum\n", FAIL);
             break;
 
         case 3:
-            pstr_8x8("ERR: could not initialize acpi: Invalid SDT Checksum\n", white);
+            pstr_8x8("ERR: could not initialize acpi: Invalid SDT Checksum\n", FAIL);
             break;
 
         case 4:
-            pstr_8x8("ERR: could not initialize acpi: Wrong signature\n", white);
+            pstr_8x8("ERR: could not initialize acpi: Wrong signature\n", FAIL);
             break;
 
         case 5:
-            pstr_8x8("ERR: could not initialize acpi: Invalid FCAP Checksum\n", white);
+            pstr_8x8("ERR: could not initialize acpi: Invalid FADT Checksum\n", FAIL);
+            break;
+
+        case 6:
+            pstr_8x8("ERR: could not initialize acpi: Invalid DSDT Checksum\n", FAIL);
             break;
 
         case 1:
-            pstr_8x8("WRN: ACPI Not enabled: skipping ACPI Driver\n", white);
+            pstr_8x8("WRN: ACPI Not enabled: skipping ACPI Driver\n", WHITE);
             break;
 
-        default:
-            pstr_8x8("ACPI Enabled successfully\n", Get_RGB(0x7CFC00));
+        case 0:
+            pstr_8x8("ACPI Enabled successfully\n", SUCCESS);
     }    
 
-    pstr_8x8("\nIO Devices initialized\n\n", Get_RGB(0x7CFC00));
+    pstr_8x8("\nIO Devices initialized\n\n", SUCCESS);
 
 }
 
 dword IO_Identify(void){
-    RGB RED = Get_RGB(0xff0033);
 
     //first word is the amount of vendors that were unsupported and second is the number of devices that are unsupported
     dword returned = 0; 
@@ -330,16 +334,18 @@ dword IO_Identify(void){
                     default:
                         // not a known vendor
 //VENDOR_UNKNOWN:
-                        pstr_8x8("MIN ERR: UNABLE TO IDENTIFY PCI VENDOR: 0x", RED);
-                        phex_8x8(PCI_Index[b][s][f][VENDOR], RED);
+                        pstr_8x8("MIN ERR: UNABLE TO IDENTIFY PCI VENDOR: 0x", FAIL);
+                        phex_8x8(PCI_Index[b][s][f][VENDOR], FAIL);
                         newline();
 
                         returned += 0x10000;
 
                         break;
 DEVICE_UNKNOWN:
-                        pstr_8x8("MIN ERR: UNABLE TO IDENTIFY PCI DEVICE: 0x", RED);
-                        phex_8x8(PCI_Index[b][s][f][DEVICE], RED);
+                        pstr_8x8("MIN ERR: UNABLE TO IDENTIFY PCI DEVICE: 0x", FAIL);
+                        phex_8x8(PCI_Index[b][s][f][VENDOR], FAIL);
+                        pchar_8x8(':', FAIL);
+                        phex_8x8(PCI_Index[b][s][f][DEVICE], FAIL);
                         newline();
 
                         returned += 0x1;
