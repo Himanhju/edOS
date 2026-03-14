@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# build nvme driver beacsue seabios wont boot from nvme drive
+# create nvme drive because seabios wont boot from nvme drive
 qemu-img create disk.img 16G
 
 # run with nvme drive and other peripherals
