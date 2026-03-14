@@ -59,8 +59,8 @@ void IO_Init(void){
             break;
     }
 
-    // load the rest of the kernel because BIOS is annoying
-    Bulk_Read_Sectors(0x81, (void *)0x17C00, 0x7F);
+    // load the rest of the kernel because BIOS is annoying (wont work if boot drive isnt the best detected)
+    //Bulk_Read_Sectors(0x81, (void *)0x17C00, 0x7F);
 
     switch(Inet_Init()){
         case E1000:
