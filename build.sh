@@ -14,7 +14,7 @@ CC=gcc-14
 LD=ld
 
 ASMFLAGS="\
- -wall -w+error \
+ -wall \
  -O3\
 "
 
