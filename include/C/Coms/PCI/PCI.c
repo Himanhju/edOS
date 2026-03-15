@@ -1,39 +1,3 @@
-/*
-
-To access a PCI device's configuration space:
-
-; Build configuration address:
-; Bits 31: Enable bit (must be 1)
-; Bits 23-16: Bus number
-; Bits 15-11: Device number
-; Bits 10-8 : Function number
-; Bits 7-2  : Register number (offset >> 2)
-; Bits 1-0  : Always 0 (DWORD access)
-
-mov eax, 0x80000000      ; Bus 0, Device 0, Function 0, Register 0
-out dx, eax              ; Write to 0xCF8
-
-mov dx, 0xCFC            ; Read result from 0xCFC
-in eax, dx               ; EAX contains vendor/device ID
-
-Example: Identify if a device is present:
-cmp ax, 0xFFFF           ; If AX == 0xFFFF, no device present
-
-
-Register Format: Building a Config Address
-
-A 32-bit value written to 0xCF8:
-
-
-Bits 31:       Enable bit (must be 1)
-Bits 30-24:    Reserved (0)
-Bits 23-16:    Bus number
-Bits 15-11:    Device number
-Bits 10-8:     Function number
-Bits 7-2:      Register number (DWORD aligned)
-Bits 1-0:      Must be 0
-*/
-
 #include <Types/Common.h>
 #include <Memory/Opcodes/Opcodes.h>
 #include <Memory/Operations/Operations.h>
